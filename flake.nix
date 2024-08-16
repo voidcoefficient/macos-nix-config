@@ -59,9 +59,31 @@
       # Set Git commit hash for darwin-version.
       system.configurationRevision = self.rev or self.dirtyRev or null;
 
-      system.defaults = {
-        finder.AppleShowAllExtensions = true;
+      system = {
+        defaults = {
+          finder.AppleShowAllExtensions = true;
+
+	  dock = {
+	    autohide = true;
+	    showhidden = true;
+	  };
+
+	  NSGlobalDomain = {
+	    NSAutomaticCapitalizationEnabled = false;
+	    NSAutomaticInlinePredictionEnabled = false;
+	    NSAutomaticDashSubstitutionEnabled = false;
+	    NSAutomaticPeriodSubstitutionEnabled = false;
+	    NSAutomaticQuoteSubstitutionEnabled = false;
+	    NSAutomaticSpellingCorrectionEnabled = false;
+	  };
+        };
+
+	keyboard = {
+	  enableKeyMapping = true;
+	  remapCapsLockToControl = true;
+	};
       };
+
 
       # Used for backwards compatibility, please read the changelog before changing.
       # $ darwin-rebuild changelog
