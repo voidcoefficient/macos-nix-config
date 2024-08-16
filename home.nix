@@ -3,6 +3,25 @@
 {
   home.stateVersion = "22.05";
 
+  programs = {
+    zsh = {
+      enable = true;
+      enableCompletion = true;
+      autosuggestion.enable = true;
+      syntaxHighlighting.enable = true;
+
+      shellAliases = {
+        lg = "lazygit";
+	update = "darwin-rebuild switch --flake ${config.xdg.configHome}/zsh/history && source /Users/marla/.zshrc";
+      };
+
+      history = {
+        size = 10000;
+	path = "~/.config/zsh/history";
+      };
+    };
+  };
+
   # https://github.com/malob/nixpkgs/blob/master/home/default.nix
 
   # Direnv, load and unload environment variables depending on the current directory.
