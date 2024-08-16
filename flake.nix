@@ -26,6 +26,8 @@
 		gh
 		jira-cli-go
 		lazygit
+		eza
+		z-lua
         ];
 
       users.users.marla.home = "/Users/marla";
