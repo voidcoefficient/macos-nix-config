@@ -19,16 +19,20 @@
       environment.systemPackages =
         with pkgs; [ 
                 neovim
-		slack
 		raycast
 		discord
-		jetbrains.webstorm
-		jira-cli-go
-		lazygit
-		gh
 		eza
 		z-lua
 		bat
+
+		# work related
+		slack
+		jira-cli-go
+
+		# code related packages that can't be in home.nix or a project flake
+		jetbrains.webstorm
+		gh
+		lazygit
 		xcodes
         ];
 
