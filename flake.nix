@@ -23,11 +23,13 @@
 		raycast
 		discord
 		jetbrains.webstorm
-		gh
 		jira-cli-go
 		lazygit
+		gh
 		eza
 		z-lua
+		bat
+		xcodes
         ];
 
       users.users.marla.home = "/Users/marla";
@@ -66,8 +68,6 @@
     };
   in
   {
-    # Build darwin flake using:
-    # $ darwin-rebuild build --flake .#simple
     darwinConfigurations."s11c-mac-studio" = nix-darwin.lib.darwinSystem {
       system = "aarch64-darwin";
       modules = [ 

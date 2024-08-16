@@ -20,6 +20,21 @@
 	path = "${config.xdg.configHome}/zsh/history";
       };
     };
+
+    git = {
+      enable = true;
+      userName = "Marla Albuquerque";
+      userEmail = "marla@albuque.com";
+
+      extraConfig = {
+        push = { autoSetupRemote = true; };
+      };
+    };
+
+    # disabled until it's fixed https://discourse.nixos.org/t/cannot-login-with-gh-cli/16601
+    # gh = {
+    #   enable = true;
+    # };
   };
 
   # https://github.com/malob/nixpkgs/blob/master/home/default.nix
@@ -35,15 +50,6 @@
   programs.htop.enable = true;
   programs.htop.settings.show_program_path = true;
 
-  programs.git = {
-    enable = true;
-    userName = "Marla Albuquerque";
-    userEmail = "marla@albuque.com";
-
-    extraConfig = {
-      push = { autoSetupRemote = true; };
-    };
-  };
 
   home.packages = with pkgs; [
     # Some basics
