@@ -12,12 +12,12 @@
 
       shellAliases = {
         lg = "lazygit";
-	update = "darwin-rebuild switch --flake ${config.xdg.configHome}/zsh/history && source /Users/marla/.zshrc";
+	update = "darwin-rebuild switch --flake ${config.xdg.configHome}/nix && source /Users/marla/.zshrc";
       };
 
       history = {
         size = 10000;
-	path = "~/.config/zsh/history";
+	path = "${config.xdg.configHome}/zsh/history";
       };
     };
   };
