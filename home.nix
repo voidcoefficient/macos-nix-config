@@ -40,9 +40,11 @@
     neovim = {
       enable = true;
       defaultEditor = true;
+      viAlias = true;
+      vimAlias = true;
 
       extraConfig = ''
-        set autoindent noexpandtab hlsearch list number showcmd splitright
+        set autoindent noexpandtab hlsearch list number relativenumber showcmd splitright
         set tabstop=2
         set shiftwidth=2
         set completeopt=menuone
