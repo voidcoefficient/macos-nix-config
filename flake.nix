@@ -18,25 +18,28 @@
       # $ nix-env -qaP | grep wget
       environment.systemPackages =
         with pkgs; [ 
-                neovim
-		raycast
-		discord
-		eza
-		z-lua
-		bat
+          miracode
+          raycast
+          discord
+          eza
+          z-lua
+          bat
 
-		# work related
-		slack
-		jira-cli-go
+    # work related
+    slack
+    jira-cli-go
+    postman
 
-		# code related packages that can't be in home.nix or a project flake
-		jetbrains.webstorm
-		gh
-		lazygit
-		xcodes
-        ];
+    # code related packages that can't be in home.nix or a project flake
+    jetbrains.webstorm
+    nodejs
+    cocoapods
+    ruby_3_2
+    gh
+    lazygit
+  ];
 
-      users.users.marla.home = "/Users/marla";
+  users.users.marla.home = "/Users/marla";
 
       # Auto upgrade nix package and the daemon service.
       services.nix-daemon.enable = true;
@@ -46,10 +49,10 @@
       nix.settings.experimental-features = "nix-command flakes";
 
       nix = {
-        linux-builder.enable = true;
-	      extraOptions = ''
-		extra-platforms = x86_64-darwin aarch64-darwin
-	      '';
+      linux-builder.enable = true;
+      extraOptions = ''
+      extra-platforms = x86_64-darwin aarch64-darwin
+      '';
       };
 
 
@@ -60,28 +63,38 @@
       system.configurationRevision = self.rev or self.dirtyRev or null;
 
       system = {
-        defaults = {
-          finder.AppleShowAllExtensions = true;
+      defaults = {
+      finder = {
+      AppleShowAllExtensions = true;
+      AppleShowAllFiles = true;
+      };
 
-	  dock = {
-	    autohide = true;
-	    showhidden = true;
-	  };
+      dock = {
+      autohide = true;
+      showhidden = true;
+      };
 
-	  NSGlobalDomain = {
-	    NSAutomaticCapitalizationEnabled = false;
-	    NSAutomaticInlinePredictionEnabled = false;
-	    NSAutomaticDashSubstitutionEnabled = false;
-	    NSAutomaticPeriodSubstitutionEnabled = false;
-	    NSAutomaticQuoteSubstitutionEnabled = false;
-	    NSAutomaticSpellingCorrectionEnabled = false;
-	  };
-        };
+      NSGlobalDomain = {
+      NSAutomaticCapitalizationEnabled = false;
+      NSAutomaticInlinePredictionEnabled = false;
+      NSAutomaticDashSubstitutionEnabled = false;
+      NSAutomaticPeriodSubstitutionEnabled = false;
+      NSAutomaticQuoteSubstitutionEnabled = false;
+      NSAutomaticSpellingCorrectionEnabled = false;
+      AppleKeyboardUIMode = 3;
+      ApplePressAndHoldEnabled = true;
+      InitialKeyRepeat = 10;
+      KeyRepeat = 1;
+      NSNavPanelExpandedStateForSaveMode = true;
+      NSNavPanelExpandedStateForSaveMode2 = true;
+      _HIHideMenuBar = true;
+      };
+      };
 
-	keyboard = {
-	  enableKeyMapping = true;
-	  remapCapsLockToControl = true;
-	};
+      keyboard = {
+      enableKeyMapping = true;
+      remapCapsLockToControl = true;
+      };
       };
 
 
@@ -91,20 +104,20 @@
 
       # The platform the configuration will be used on.
       nixpkgs.hostPlatform = "aarch64-darwin";
-    };
-  in
-  {
-    darwinConfigurations."s11c-mac-studio" = nix-darwin.lib.darwinSystem {
-      system = "aarch64-darwin";
-      modules = [ 
-      	configuration 
-        home-manager.darwinModules.home-manager {
-	  home-manager.useGlobalPkgs = true;
-	  home-manager.useUserPackages = true;
-	  home-manager.users.marla = import ./home.nix;
-        }
-      ];
-    };
+      };
+      in
+      {
+      darwinConfigurations."s11c-mac-studio" = nix-darwin.lib.darwinSystem {
+        system = "aarch64-darwin";
+        modules = [ 
+          configuration 
+          home-manager.darwinModules.home-manager {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.users.marla = import ./home.nix;
+          }
+        ];
+      };
 
     # Expose the package set, including overlays, for convenience.
     darwinPackages = self.darwinConfigurations."s11c-mac-studio".pkgs;

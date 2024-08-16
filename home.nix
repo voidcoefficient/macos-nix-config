@@ -12,12 +12,12 @@
 
       shellAliases = {
         lg = "lazygit";
-	update = "darwin-rebuild switch --flake ${config.xdg.configHome}/nix && source /Users/marla/.zshrc";
+        update = "darwin-rebuild switch --flake ${config.xdg.configHome}/nix && source /Users/marla/.zshrc";
       };
 
       history = {
         size = 10000;
-	path = "${config.xdg.configHome}/zsh/history";
+        path = "${config.xdg.configHome}/zsh/history";
       };
     };
 
@@ -31,10 +31,35 @@
       };
     };
 
+
     # disabled until it's fixed https://discourse.nixos.org/t/cannot-login-with-gh-cli/16601
     # gh = {
     #   enable = true;
     # };
+
+    neovim = {
+      enable = true;
+      defaultEditor = true;
+
+      extraConfig = ''
+        set autoindent noexpandtab hlsearch list number showcmd splitright
+        set tabstop=2
+        set shiftwidth=2
+        set completeopt=menuone
+        set encoding=utf-8
+
+        let mapleader = ' '
+      '';
+
+      plugins = with pkgs.vimPlugins; [
+        vim-sensible
+        vim-surround
+        ReplaceWithRegister
+        polyglot
+        fzfWrapper
+        deoplete-nvim
+      ];
+    };
   };
 
   # https://github.com/malob/nixpkgs/blob/master/home/default.nix
@@ -50,26 +75,21 @@
   programs.htop.enable = true;
   programs.htop.settings.show_program_path = true;
 
-
   home.packages = with pkgs; [
-    # Some basics
     coreutils
     curl
     wget
 
-    # Dev stuff
+    # dev related
     jq
-    nodePackages.typescript
-    nodejs
 
-    # Useful nix related tools
+    # nix related tools
     cachix # adding/managing alternative binary caches hosted by Cachix
-    # comma # run software from without installing it
+    comma # run software from without installing it
     # niv # easy dependency management for nix projects
     # nodePackages.node2nix
-
   ] ++ lib.optionals stdenv.isDarwin [
-    cocoapods
     m-cli # useful macOS CLI commands
+
   ];
 }
