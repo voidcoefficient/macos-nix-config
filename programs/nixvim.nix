@@ -39,6 +39,11 @@
       gdefault = true; # global substitution by default
 
       scrolloff = 5; # scroll offset
+
+      # staline requirements
+      laststatus = 2;
+      showtabline = 2;
+      termguicolors = true;
     };
 
 
@@ -52,29 +57,56 @@
       cmp-buffer.enable = true;
       cmp-path.enable = true;
       cmp-cmdline.enable = true;
-      persistence.enable = true;
       trouble.enable = true; # diagnostics
       lsp-lines.enable = true;
       lsp-format.enable = true;
       # ? helm.enable = true;
       treesitter-context.enable = true;
       lazygit.enable = true;
+      nix-develop.enable = true;
+
+      transparent = {
+        enable = true;
+        settings = {
+          exclude_groups = [
+            "CursorLine"
+            "CursorLineNC"
+          ];
+          extra_groups = [
+            "NormalFloat"
+            "BufferLineTabClose"
+            "BufferLineBufferSelected"
+            "BufferLineFill"
+            "BufferLineBackground"
+            "BufferLineSeparator"
+            "BufferLineIndicatorSelected"
+            "NonText"
+          ];
+        };
+
+      };
+
+      persistence = {
+        enable = true;
+        options = [ "buffers" "curdir" "folds" "globals" "resize" "tabpages" "winpos" "winsize" ];
+      };
 
       bufferline = {
         enable = true;
         settings.options = {
           color_icons = false;
-          show_buffer_close_icons = false;
-          show_close_icons = false;
           show_buffer_icons = false;
           separator_style = "thin";
           diagnostics = "nvim_lsp";
           mode = "buffers";
+          buffer_close_icon = "X";
+          close_icon = "X";
+          modified_icon = "M";
         };
       };
 
       lualine = {
-        enable = true;
+        enable = false;
         globalstatus = true;
         iconsEnabled = false;
         extensions = [ "fzf" ];
@@ -86,8 +118,8 @@
           right = "<";
         };
         componentSeparators = {
-          left = ">";
-          right = "<";
+          left = " > ";
+          right = " < ";
         };
       };
 
@@ -140,10 +172,12 @@
         settings = {
           cmd = [ "bash -c nvim" ];
           debug = true;
+          updateInInsert = false;
         };
         sources = {
           code_actions = {
             gitsigns.enable = true;
+            statix.enable = true;
           };
 
           formatting = {
@@ -233,7 +267,64 @@
             };
           };
         };
+      };
 
+      lspsaga = {
+        enable = true;
+        beacon.enable = true;
+        ui = {
+          devicon = false;
+          border = "none";
+          codeAction = " ! ";
+          actionfix = "fix";
+          collapse = "v";
+          expand = "^";
+        };
+        diagnostic = {
+          borderFollow = true;
+          diagnosticOnlyCurrent = false;
+          showCodeAction = true;
+        };
+        symbolInWinbar = {
+          enable = true; # Breadcrumbs
+          hideKeyword = true;
+          separator = " > ";
+          showFile = false;
+        };
+        codeAction = {
+          extendGitSigns = false;
+          showServerName = true;
+          onlyInCursor = true;
+          numShortcut = true;
+          keys = {
+            exec = "<CR>";
+            quit = [
+              "<Esc>"
+              "q"
+            ];
+          };
+        };
+        lightbulb = {
+          enable = false;
+          sign = false;
+          virtualText = false;
+        };
+        outline = {
+          autoClose = true;
+          autoPreview = true;
+          closeAfterJump = true;
+          layout = "float"; # normal or float
+          winPosition = "right"; # left or right
+          keys = {
+            jump = "e";
+            quit = "q";
+            toggleOrJump = "o";
+          };
+        };
+        scrollPreview = {
+          scrollDown = "<C-f>";
+          scrollUp = "<C-b>";
+        };
       };
 
       toggleterm = {
@@ -242,7 +333,7 @@
           hide_numbers = false;
           autochdir = true;
           close_on_exit = true;
-          direction = "vertical";
+          direction = "horizontal";
         };
       };
 
@@ -325,6 +416,7 @@
           "alpha"
           "harpoon"
           "reason"
+          "oil"
         ];
       };
 
@@ -340,8 +432,55 @@
 
       alpha = {
         enable = true;
-        theme = "dashboard";
-        iconsEnabled = true;
+        theme = null;
+        iconsEnabled = false;
+        layout = [
+          {
+            type = "padding";
+            val = 2;
+          }
+          {
+            opts = {
+              hl = "Type";
+              position = "center";
+            };
+            type = "text";
+            val = [
+              "nixvim"
+            ];
+          }
+          {
+            type = "padding";
+            val = 2;
+          }
+          {
+            type = "group";
+            val = [
+              {
+                on_press = {
+                  __raw = "function() vim.cmd[[ene]] end";
+                };
+                opts = {
+                  shortcut = "n";
+                  position = "center";
+                };
+                type = "button";
+                val = "  new file";
+              }
+              {
+                on_press = {
+                  __raw = "function() vim.cmd[[qa]] end";
+                };
+                opts = {
+                  shortcut = "q";
+                  position = "center";
+                };
+                type = "button";
+                val = " quit nixvim";
+              }
+            ];
+          }
+        ];
       };
 
       cmp = {
@@ -421,7 +560,7 @@
           display = {
             renderLimit = 16; # How many LSP messages to show at once
             doneTtl = 3; # How long a message should persist after completion
-            doneIcon = "X"; # Icon shown when all LSP progress tasks are complete
+            doneIcon = ""; # Icon shown when all LSP progress tasks are complete
             doneStyle = "Constant"; # Highlight group for completed LSP tasks
             progressTtl = "math.huge"; # How long a message should persist when in progress
             progressIcon = {
@@ -563,9 +702,11 @@
       treesitter = {
         enable = true;
         folding = false;
-        nixvimInjections = true;
+        nixvimInjections = false; # doesn't work with poimandres-nvim
+        nixGrammars = false; # doesn't work with poimandres-nvim
 
         settings = {
+          auto_install = true; # required because of poimandres-nvim
           indent.enable = true;
           highlight.enable = true;
         };
@@ -618,19 +759,163 @@
             "<leader>A" = "@parameter.outer";
           };
         };
+
+      };
+
+      neocord = {
+        enable = true;
+        settings = {
+          auto_update = true;
+          enable_line_number = true;
+        };
+      };
+
+      oil = {
+        enable = true;
+        settings = {
+          useDefaultKeymaps = true;
+          deleteToTrash = true;
+          columns = [ "type" "size" "permissions" ];
+          view_options.show_hidden = true;
+          constrain_cursor = "name";
+          preview.border = "rounded";
+          keymaps_help.border = "rounded";
+          win_options = {
+            conceallevel = 3;
+          };
+          float = {
+            padding = 4;
+            maxWidth = 0; # ''math.ceil(vim.o.lines * 0.8 - 4)'';
+            maxHeight = 0; # ''math.ceil(vim.o.columns * 0.8)'';
+            border = "rounded"; # 'single' | 'double' | 'shadow' | 'curved' | ... other options supported by win open
+            winOptions = {
+              winblend = 0;
+            };
+          };
+          keymaps = {
+            "g?" = "actions.show_help";
+            "<CR>" = "actions.select";
+            "<C-\\>" = "actions.select_vsplit";
+            "<C-enter>" = "actions.select_split"; # this is used to navigate left
+            "<C-t>" = "actions.select_tab";
+            "<C-v>" = "actions.preview";
+            "<C-c>" = "actions.close";
+            "<C-r>" = "actions.refresh";
+            "-" = "actions.parent";
+            "_" = "actions.open_cwd";
+            "`" = "actions.cd";
+            "~" = "actions.tcd";
+            "gs" = "actions.change_sort";
+            "gx" = "actions.open_external";
+            "g." = "actions.toggle_hidden";
+            "q" = "actions.close";
+          };
+        };
+      };
+
+      nvim-lightbulb = {
+        enable = true;
+        settings = {
+          autocmd = {
+            enabled = true;
+            updatetime = 200;
+          };
+          line.enabled = false;
+          float.enabled = false;
+          number.enabled = false;
+          sign.enabled = false;
+          status_text.enabled = false;
+
+          virtual_text = {
+            enabled = true;
+            text = "  !";
+          };
+        };
       };
     };
 
     extraConfigLua = ''
+      vim.cmd('colorscheme poimandres')
       local opt = { noremap = true }
       local telescope = require("telescope")
       telescope.load_extension("lazygit")
       telescope.setup({})
 
       local cmp = require'cmp'
+
+      require("staline").setup({
+        sections = {
+          left = { "-mode", " ", "branch", " ", "cwd" },
+          mid = { "" },
+          right = { "lsp", " ", "lsp_name", " ", "line_column" },
+        },
+        inactive_sections = {
+          left = { "branch" },
+          mid = { "" },
+          right = { "lsp_name", " ", "line_column" },
+        },
+        defaults = {
+          left_separator = " ",
+          right_separator = "  ",
+          branch_symbol = "b ",
+          mod_symbol = "",
+          line_column = "[%l/%L]",
+          inactive_color = "#80a6f2", --#303030 is the default
+          inactive_bgcolor = "none",
+          bg = "none",
+          true_colors = true,
+          lsp_client_symbol = "",
+        },
+        special_table = {
+          TelescopePrompt = { "telescope", "" },
+          oil = { "oil", "" },
+          lazygit = { "lazygit", "" },
+        },
+        lsp_symbols = {
+          Error = "E ",
+          Info = "I ",
+          Warn = "W ",
+          Hint = "H ",
+        };
+        mode_icons = {
+          ["n"] = "NORMAL",
+          ["no"] = "NORMAL",
+          ["nov"] = "NORMAL",
+          ["noV"] = "NORMAL",
+          ["niI"] = "NORMAL",
+          ["niR"] = "NORMAL",
+          ["niV"] = "NORMAL",
+          ["i"] = "INSERT",
+          ["ic"] = "INSERT",
+          ["ix"] = "INSERT",
+          ["s"] = "INSERT",
+          ["S"] = "INSERT",
+          ["v"] = "VISUAL",
+          ["V"] = "VISUAL",
+          [""] = "VISUAL",
+          ["r"] = "REPLACE",
+          ["r?"] = "REPLACE",
+          ["R"] = "REPLACE",
+          ["c"] = "COMMAND",
+          ["t"] = "TERMINAL",
+        },
+      })
     '';
 
-    extraPlugins = with pkgs.vimPlugins; [ vim-be-good ];
+    extraPlugins = with pkgs.vimPlugins; [
+      vim-be-good
+      poimandres-nvim
+      (pkgs.vimUtils.buildVimPlugin {
+        pname = "staline.nvim";
+        version = "2024-02-05";
+        src = pkgs.fetchFromGitHub {
+          owner = "tamton-aquib";
+          repo = "staline.nvim";
+          rev = "d337bc9b343df3328921ef4c3f8ff604102d0201";
+          hash = "sha256-HkuVio/F8HOb6k9N8LkYdQ1vheuyjrqP25RforoWZSk=";
+        };
+      })
+    ];
 
     extraPackages = with pkgs; [
       shfmt
@@ -719,7 +1004,7 @@
       }
       {
         mode = "n";
-        key = "<leader>gd";
+        key = "<leader>gtd";
         action = "<cmd>Gitsigns toggle_deleted<cr>";
         options.desc = "toggle deleted lines preview";
       }
@@ -728,6 +1013,45 @@
         key = "<leader>gh";
         action = "<cmd>Gitsigns setqflist<cr><C-w><C-w>";
         options.desc = "open preview of hunks in current file";
+      }
+
+      {
+        mode = "n";
+        key = "-";
+        action = ":Oil<CR>";
+        options = {
+          desc = "open parent directory";
+          silent = true;
+        };
+      }
+
+      {
+        mode = "n";
+        key = "<leader>ca";
+        action = "<cmd>Lspsaga code_action<CR>";
+        options = {
+          desc = "code action";
+          silent = true;
+        };
+      }
+
+      {
+        mode = "n";
+        key = "<CR>";
+        action = "<cmd>Lspsaga code_action<CR>";
+        options = {
+          desc = "code action";
+          silent = true;
+        };
+      }
+      {
+        mode = "i";
+        key = "<C-CR>";
+        action = "<cmd>Lspsaga code_action<CR>";
+        options = {
+          desc = "code action";
+          silent = true;
+        };
       }
     ];
   };
