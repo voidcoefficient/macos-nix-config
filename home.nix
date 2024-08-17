@@ -30,6 +30,60 @@
       };
     };
 
+    nushell = {
+      enable = true;
+      extraConfig = ''
+        let carapace_completer = { |spans|
+          carapace $spans.0 nushell $spans | from json
+        }
+
+        $env.config = {
+          show_banner: true,
+          completions: {
+            case_sensitive: true
+            quick: true
+            partial: ture
+            algorithm: "fuzzy"
+            external: {
+              enable: true
+              max_results: 100
+              completer: $carapac_completer
+            }
+          }
+
+          $env.PATH = ( $env.PATH | split row (char esep) | append /usr/bin/env )
+        }
+      '';
+
+      shellAliases = {
+        ls = "eza";
+        cat = "bat";
+        lg = "lazygit";
+        update = "darwin-rebuild switch --flake ${config.xdg.configHome}/nix && source /Users/marla/.zshrc";
+        home = "/Users/marla/.local/state/nix/profiles/home-manager/bin/home-manager-generation";
+      };
+    };
+    carapace = {
+      enable = true;
+      enableNushellIntegration = true;
+    };
+    starship = {
+      enable = true;
+      settings = {
+        add_newline = false;
+        directory = {
+          fish_style_pwd_dir_length = 1;
+          truncation_length = 2;
+        };
+        character = {
+          success_symbol = ">(bold green)";
+          error_symbol = ">(bold red)";
+        };
+      };
+    };
+
+
+
     git = {
       enable = true;
       userName = "Marla Albuquerque";
