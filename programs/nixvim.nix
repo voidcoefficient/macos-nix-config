@@ -286,7 +286,7 @@
           showCodeAction = true;
         };
         symbolInWinbar = {
-          enable = true; # Breadcrumbs
+          enable = false; # Breadcrumbs
           hideKeyword = true;
           separator = " > ";
           showFile = false;
@@ -350,7 +350,24 @@
       which-key = {
         enable = true;
         settings = {
-          icons.rules = false;
+          icons = {
+            rules = false;
+            breadcrumb = ">";
+            separator = ">";
+            mappings = false;
+            keys = {
+              BS = "BS";
+              C = "CTRL";
+              CR = "ENTER";
+              NL = "ENTER";
+              D = "M";
+              Esc = "ESC";
+              M = "M";
+              S = "SHIFT";
+              Space = "SPACE";
+              Tab = "TAB";
+            };
+          };
           expand = 1;
           notify = false;
           preset = false;
@@ -379,11 +396,14 @@
           win = {
             padding = [ 0 0 ];
             title = false;
+            height.min = 4;
+            height.max = 25;
+            width = 999;
+            col = 0;
           };
           layout = {
             spacing = 2;
-            width.max = 400;
-            width.min = 200;
+            wo.winblend = 20;
           };
         };
       };
@@ -393,6 +413,7 @@
         extensions = {
           file-browser.enable = true;
           fzf-native.enable = true;
+          ui-select.enable = true;
         };
         settings = {
           defaults.layout_config.horizontal.prompt_position = "top";
@@ -839,7 +860,13 @@
       local opt = { noremap = true }
       local telescope = require("telescope")
       telescope.load_extension("lazygit")
-      telescope.setup({})
+      telescope.setup({
+        pickers = {
+          find_files = {
+            theme = "dropdown"
+          },
+        },
+      })
 
       local cmp = require'cmp'
 
@@ -919,6 +946,7 @@
 
     extraPackages = with pkgs; [
       shfmt
+      ripgrep
     ];
 
     keymaps = [
@@ -1050,6 +1078,25 @@
         action = "<cmd>Lspsaga code_action<CR>";
         options = {
           desc = "code action";
+          silent = true;
+        };
+      }
+
+      {
+        mode = "n";
+        key = "<leader>:";
+        action = "<cmd>Telescope commands<CR>";
+        options = {
+          desc = "command palette";
+          silent = true;
+        };
+      }
+      {
+        mode = "n";
+        key = "<leader>bb";
+        action = "<cmd>Telescope bufferrs<CR>";
+        options = {
+          desc = "show all buffers";
           silent = true;
         };
       }
