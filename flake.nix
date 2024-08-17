@@ -3,13 +3,21 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    nix-darwin.url = "github:LnL7/nix-darwin";
-    nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
-    home-manager.url = "github:nix-community/home-manager";
-    home-manager.inputs.nixpkgs.follows = "nixpkgs";
+    nix-darwin = {
+      url = "github:LnL7/nix-darwin";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    home-manager = {
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    nixvim = {
+      url = "github:nix-community/nixvim";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = inputs@{ self, nix-darwin, nixpkgs, home-manager }:
+  outputs = inputs@{ self, nix-darwin, nixpkgs, home-manager, nixvim }:
   let
     configuration = { pkgs, ... }: {
       nixpkgs.config.allowUnfree = true;
@@ -106,12 +114,16 @@
       {
         darwinConfigurations."s11c-mac-studio" = nix-darwin.lib.darwinSystem {
           system = "aarch64-darwin";
-          modules = [ 
-            configuration 
+          modules = [
+            configuration
             home-manager.darwinModules.home-manager {
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
               home-manager.users.marla = import ./home.nix;
+
+              home-manager.sharedModules = [
+                nixvim.homeManagerModules.nixvim
+              ];
             }
           ];
         };

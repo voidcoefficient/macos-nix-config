@@ -1,6 +1,11 @@
 { config, pkgs, lib, ... }:
 
 {
+  imports = [
+    ./programs/alacritty.nix
+    ./programs/nixvim.nix
+  ];
+
   home = {
     stateVersion = "22.05";
     username = "marla";
@@ -47,7 +52,7 @@
             external: {
               enable: true
               max_results: 100
-              completer: $carapac_completer
+              completer: $carapace_completer
             }
           }
 
@@ -59,7 +64,7 @@
         ls = "eza";
         cat = "bat";
         lg = "lazygit";
-        update = "darwin-rebuild switch --flake ${config.xdg.configHome}/nix && source /Users/marla/.zshrc";
+        sync = "darwin-rebuild switch --flake ${config.xdg.configHome}/nix and source /Users/marla/.zshrc";
         home = "/Users/marla/.local/state/nix/profiles/home-manager/bin/home-manager-generation";
       };
     };
@@ -69,6 +74,7 @@
     };
     starship = {
       enable = true;
+      enableNushellIntegration = true;
       settings = {
         add_newline = false;
         directory = {
@@ -81,8 +87,6 @@
         };
       };
     };
-
-
 
     git = {
       enable = true;
@@ -99,32 +103,6 @@
     # gh = {
     #   enable = true;
     # };
-
-    neovim = {
-      enable = true;
-      defaultEditor = true;
-      viAlias = true;
-      vimAlias = true;
-
-      extraConfig = ''
-        set autoindent noexpandtab hlsearch list number relativenumber showcmd splitright
-        set tabstop=2
-        set shiftwidth=2
-        set completeopt=menuone
-        set encoding=utf-8
-
-        let mapleader = ' '
-      '';
-
-      plugins = with pkgs.vimPlugins; [
-        vim-sensible
-        vim-surround
-        ReplaceWithRegister
-        polyglot
-        fzfWrapper
-        deoplete-nvim
-      ];
-    };
   };
 
   # https://github.com/malob/nixpkgs/blob/master/home/default.nix
@@ -156,6 +134,5 @@
     # nodePackages.node2nix
   ] ++ lib.optionals stdenv.isDarwin [
     m-cli # useful macOS CLI commands
-
   ];
 }
