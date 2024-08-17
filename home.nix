@@ -56,7 +56,7 @@
             }
           }
 
-          $env.PATH = ( $env.PATH | split row (char esep) | append /usr/bin/env )
+          $env.PATH: ( $env.PATH | split row (char esep) | append /usr/bin/env )
         }
       '';
 
