@@ -63,6 +63,10 @@
       bufferline = {
         enable = true;
         settings.options = {
+          color_icons = false;
+          show_buffer_close_icons = false;
+          show_close_icons = false;
+          show_buffer_icons = false;
           separator_style = "thin";
           diagnostics = "nvim_lsp";
           mode = "buffers";
@@ -72,9 +76,18 @@
       lualine = {
         enable = true;
         globalstatus = true;
+        iconsEnabled = false;
         extensions = [ "fzf" ];
         disabledFiletypes = {
           statusline = [ "startup" "alpha" ];
+        };
+        sectionSeparators = {
+          left = ">";
+          right = "<";
+        };
+        componentSeparators = {
+          left = ">";
+          right = "<";
         };
       };
 
@@ -103,7 +116,7 @@
               ":%s*s!%s*"
               ":%s*s/%s*"
             ];
-            icon = "";
+            icon = "";
             lang = "regex";
           };
           replace = {
@@ -115,7 +128,7 @@
               ":%s*s!%w*!%s*"
               ":%s*s/%w*/%s*"
             ];
-            icon = "󱞪";
+            icon = "";
             lang = "regex";
           };
         };
@@ -235,15 +248,52 @@
 
       gitsigns = {
         enable = true;
-        settings.current_line_blame = true;
+        settings = {
+          current_line_blame = true;
+          numhl = true;
+          signcolumn = false;
+          trouble = true;
+        };
       };
 
       which-key = {
         enable = true;
-        registrations.spec = {
-          "<leader>fg" = "find git files with telescope";
-          "<leader>fw" = "find text with telescope";
-          "<leader>ff" = "find files with telescope";
+        settings = {
+          icons.rules = false;
+          expand = 1;
+          notify = false;
+          preset = false;
+          replace = {
+            desc = [
+              [ "<leader>" "<space>" ]
+              [ "<[cC][rR]>" "<return>" ]
+              [ "<[tT][aA][bB]" "<tab>" ]
+              [ "[bB][sS]" "<backspace>" ]
+            ];
+          };
+          spec = [
+            {
+              __unkeyed-1 = "<leader>b";
+              group = "buffers";
+            }
+            {
+              __unkeyed-2 = "<leader>c";
+              group = "code";
+            }
+            {
+              __unkeyed-3 = "<leader>g";
+              group = "goto";
+            }
+          ];
+          win = {
+            padding = [ 0 0 ];
+            title = false;
+          };
+          layout = {
+            spacing = 2;
+            width.max = 400;
+            width.min = 200;
+          };
         };
       };
 
@@ -371,7 +421,7 @@
           display = {
             renderLimit = 16; # How many LSP messages to show at once
             doneTtl = 3; # How long a message should persist after completion
-            doneIcon = "✔"; # Icon shown when all LSP progress tasks are complete
+            doneIcon = "X"; # Icon shown when all LSP progress tasks are complete
             doneStyle = "Constant"; # Highlight group for completed LSP tasks
             progressTtl = "math.huge"; # How long a message should persist when in progress
             progressIcon = {
@@ -445,37 +495,69 @@
         depthLimit = 2;
         lsp.autoAttach = true;
         icons = {
-          Array = "󱃵  ";
-          Boolean = "  ";
-          Class = "  ";
-          Constant = "  ";
-          Constructor = "  ";
-          Enum = " ";
-          EnumMember = " ";
-          Event = " ";
-          Field = "󰽏 ";
-          File = " ";
-          Function = "󰡱 ";
-          Interface = " ";
-          Key = "  ";
-          Method = " ";
-          Module = "󰕳 ";
-          Namespace = " ";
-          Null = "󰟢 ";
-          Number = " ";
-          Object = "  ";
-          Operator = " ";
-          Package = "󰏖 ";
-          String = " ";
-          Struct = " ";
-          TypeParameter = " ";
-          Variable = " ";
+          Array = "> ";
+          Boolean = "> ";
+          Class = "> ";
+          Constant = "> ";
+          Constructor = "> ";
+          Enum = "> ";
+          EnumMember = "> ";
+          Event = "> ";
+          Field = "> ";
+          File = "> ";
+          Function = "> ";
+          Interface = "> ";
+          Key = "> ";
+          Method = "> ";
+          Module = "> ";
+          Namespace = "> ";
+          Null = "> ";
+          Number = "> ";
+          Object = "> ";
+          Operator = "> ";
+          Package = "> ";
+          String = "> ";
+          Struct = "> ";
+          TypeParameter = "> ";
+          Variable = "> ";
         };
       };
 
       navbuddy = {
         enable = true;
         lsp.autoAttach = true;
+        icons = {
+          Array = "> ";
+          Boolean = "> ";
+          Class = "> ";
+          Constant = "> ";
+          Constructor = "> ";
+          Enum = "> ";
+          EnumMember = "> ";
+          Event = "> ";
+          Field = "> ";
+          File = "> ";
+          Function = "> ";
+          Interface = "> ";
+          Key = "> ";
+          Method = "> ";
+          Module = "> ";
+          Null = "> ";
+          Number = "> ";
+          Object = "> ";
+          Operator = "> ";
+          Package = "> ";
+          Property = "> ";
+          String = "> ";
+          Struct = "> ";
+          TypeParameter = "> ";
+          Variable = "> ";
+        };
+        nodeMarkers.icons = {
+          branch = " > ";
+          leaf = " ";
+          leafSelected = " > ";
+        };
       };
 
       treesitter = {
@@ -634,6 +716,18 @@
         key = "<leader>gc";
         action = "<cmd>LazyGitFilterCurrentFile<cr>";
         options.desc = "open buffer commits";
+      }
+      {
+        mode = "n";
+        key = "<leader>gd";
+        action = "<cmd>Gitsigns toggle_deleted<cr>";
+        options.desc = "toggle deleted lines preview";
+      }
+      {
+        mode = "n";
+        key = "<leader>gh";
+        action = "<cmd>Gitsigns setqflist<cr><C-w><C-w>";
+        options.desc = "open preview of hunks in current file";
       }
     ];
   };
