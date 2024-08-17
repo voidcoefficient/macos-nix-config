@@ -16,7 +16,7 @@
       };
     };
 
-    globals.mapleader = "<Space>";
+    globals.mapleader = " ";
     opts = {
       number = true;
       relativenumber = true;
@@ -46,7 +46,6 @@
       ts-autotag.enable = true; # treesitter autotag
       nvim-autopairs.enable = true;
       commentary.enable = true; # easy comments
-      noice.enable = true; # fancier prettier cmd window
       nix.enable = true;
       cmp-emoji.enable = true;
       cmp-nvim-lsp.enable = true;
@@ -58,11 +57,16 @@
       lsp-lines.enable = true;
       lsp-format.enable = true;
       # ? helm.enable = true;
+      treesitter-context.enable = true;
+      lazygit.enable = true;
 
       bufferline = {
         enable = true;
-        diagnostics = "nvim_lsp";
-        mode = "buffers";
+        settings.options = {
+          separator_style = "thin";
+          diagnostics = "nvim_lsp";
+          mode = "buffers";
+        };
       };
 
       lualine = {
@@ -74,13 +78,61 @@
         };
       };
 
+      noice = {
+        enable = true;
+        notify.enabled = false;
+        messages.enabled = true;
+        lsp = {
+          message.enabled = true;
+          progress = {
+            enabled = false;
+            view = "mini";
+          };
+        };
+        popupmenu = {
+          enabled = true;
+          backend = "nui";
+        };
+        format = {
+          filter = {
+            pattern = [
+              ":%s*%%s*s:%s*"
+              ":%s*%%s*s!%s*"
+              ":%s*%%s*s/%s*"
+              "%s*s:%s*"
+              ":%s*s!%s*"
+              ":%s*s/%s*"
+            ];
+            icon = "";
+            lang = "regex";
+          };
+          replace = {
+            pattern = [
+              ":%s*%%s*s:%w*:%s*"
+              ":%s*%%s*s!%w*!%s*"
+              ":%s*%%s*s/%w*/%s*"
+              "%s*s:%w*:%s*"
+              ":%s*s!%w*!%s*"
+              ":%s*s/%w*/%s*"
+            ];
+            icon = "󱞪";
+            lang = "regex";
+          };
+        };
+      };
+
       none-ls = {
         enable = true;
+        enableLspFormat = true;
         settings = {
           cmd = [ "bash -c nvim" ];
           debug = true;
         };
         sources = {
+          code_actions = {
+            gitsigns.enable = true;
+          };
+
           formatting = {
             stylua.enable = true;
             shfmt.enable = true;
@@ -122,49 +174,49 @@
           lspBuf = {
             gd = {
               action = "definition";
-              desc = "Goto Definition";
+              desc = "goto Definition";
             };
             gr = {
               action = "references";
-              desc = "Goto References";
+              desc = "goto References";
             };
             gD = {
               action = "declaration";
-              desc = "Goto Declaration";
+              desc = "goto Declaration";
             };
             gI = {
               action = "implementation";
-              desc = "Goto Implementation";
+              desc = "goto Implementation";
             };
             gT = {
               action = "type_definition";
-              desc = "Type Definition";
+              desc = "type Definition";
             };
             K = {
               action = "hover";
-              desc = "Hover";
+              desc = "hover";
             };
             "<leader>cw" = {
               action = "workspace_symbol";
-              desc = "Workspace Symbol";
+              desc = "workspace Symbol";
             };
             "<leader>cr" = {
               action = "rename";
-              desc = "Rename";
+              desc = "rename";
             };
           };
           diagnostic = {
             "<leader>cd" = {
               action = "open_float";
-              desc = "Line Diagnostics";
+              desc = "line Diagnostics";
             };
             "[d" = {
               action = "goto_next";
-              desc = "Next Diagnostic";
+              desc = "next Diagnostic";
             };
             "]d" = {
               action = "goto_prev";
-              desc = "Previous Diagnostic";
+              desc = "previous Diagnostic";
             };
           };
         };
@@ -189,16 +241,27 @@
       which-key = {
         enable = true;
         registrations.spec = {
-          "'<leader>fg" = "Find git files with telescope";
-          "'<leader>fw" = "Find text with telescope";
-          "'<leader>ff" = "Find files with telescope";
+          "<leader>fg" = "find git files with telescope";
+          "<leader>fw" = "find text with telescope";
+          "<leader>ff" = "find files with telescope";
         };
       };
 
       telescope = {
         enable = true;
         extensions = {
+          file-browser.enable = true;
           fzf-native.enable = true;
+        };
+        settings = {
+          defaults.layout_config.horizontal.prompt_position = "top";
+          sorting_strategy = "ascending";
+        };
+        keymaps = {
+          "<leader><space>" = {
+            action = "find_files";
+            options.desc = "find project files";
+          };
         };
       };
 
@@ -377,12 +440,10 @@
 
       navic = {
         enable = true;
-        separator = "  ";
+        separator = " > ";
         highlight = true;
-        depthLimit = 5;
-        lsp = {
-          autoAttach = true;
-        };
+        depthLimit = 2;
+        lsp.autoAttach = true;
         icons = {
           Array = "󱃵  ";
           Boolean = "  ";
@@ -410,6 +471,11 @@
           TypeParameter = " ";
           Variable = " ";
         };
+      };
+
+      navbuddy = {
+        enable = true;
+        lsp.autoAttach = true;
       };
 
       treesitter = {
@@ -476,16 +542,99 @@
     extraConfigLua = ''
       local opt = { noremap = true }
       local telescope = require("telescope")
+      telescope.load_extension("lazygit")
       telescope.setup({})
 
       local cmp = require'cmp'
-      vim.g.mapleader = '<Space>'
     '';
 
     extraPlugins = with pkgs.vimPlugins; [ vim-be-good ];
 
     extraPackages = with pkgs; [
       shfmt
+    ];
+
+    keymaps = [
+      {
+        mode = "n";
+        key = "<Tab>";
+        action = "<cmd>BufferLineCycleNext<cr>";
+        options.desc = "cycle to next buffer";
+      }
+      {
+        mode = "n";
+        key = "<S-Tab>";
+        action = "<cmd>BufferLineCyclePrev<cr>";
+        options.desc = "cycle to previous buffer";
+      }
+      {
+        mode = "n";
+        key = "<leader>bd";
+        action = "<cmd>bdelete<cr>";
+        options.desc = "delete buffer";
+      }
+      {
+        mode = "n";
+        key = "<leader>br";
+        action = "<cmd>BufferLineCloseRight<cr>";
+        options.desc = "delete buffers to the right";
+      }
+      {
+        mode = "n";
+        key = "<leader>bl";
+        action = "<cmd>BufferLineCloseLeft<cr>";
+        options.desc = "delete buffers to the right";
+      }
+      {
+        mode = "n";
+        key = "<leader>bo";
+        action = "<cmd>BufferLineCloseOthers<cr>";
+        options.desc = "delete buffers to the right";
+      }
+      {
+        mode = "n";
+        key = "<leader>bp";
+        action = "<cmd>BufferLineTogglePin<cr>";
+        options.desc = "toggle pin";
+      }
+      {
+        mode = "n";
+        key = "<leader>bP";
+        action = "<cmd>BufferLineGroupClose ungrouped<cr>";
+        options.desc = "delete non-pinned buffers";
+      }
+
+      {
+        mode = "n";
+        key = "<leader>gi";
+        action = "<cmd>Navbuddy<cr>";
+        options.desc = "open navbuddy";
+      }
+
+      {
+        mode = "n";
+        key = "<leader>gg";
+        action = "<cmd>LazyGit<cr>";
+        options.desc = "open lazygit";
+      }
+      {
+        mode = "n";
+        key = "<leader>gc";
+        action = "<cmd>LazyGitFilter<cr>";
+        options.desc = "open project commits";
+      }
+      {
+        mode = "n";
+        key = "<leader>gf";
+        action = "<cmd>LazyGitCurrentFile<cr>";
+        options.desc = "open lazygit in the project root of the current file";
+      }
+      {
+        mode = "n";
+        key = "<leader>gc";
+        action = "<cmd>LazyGitFilterCurrentFile<cr>";
+        options.desc = "open buffer commits";
+      }
     ];
   };
 }
