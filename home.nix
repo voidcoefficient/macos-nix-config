@@ -1,9 +1,15 @@
 { config, pkgs, lib, ... }:
 
 {
-  home.stateVersion = "22.05";
+  home = {
+    stateVersion = "22.05";
+    username = "marla";
+    homeDirectory = "/Users/marla";
+  };
 
   programs = {
+    home-manager.enable = true;
+
     zsh = {
       enable = true;
       enableCompletion = true;
@@ -11,8 +17,11 @@
       syntaxHighlighting.enable = true;
 
       shellAliases = {
+        ls = "eza";
+        cat = "bat";
         lg = "lazygit";
         update = "darwin-rebuild switch --flake ${config.xdg.configHome}/nix && source /Users/marla/.zshrc";
+        home = "/Users/marla/.local/state/nix/profiles/home-manager/bin/home-manager-generation";
       };
 
       history = {
@@ -84,6 +93,7 @@
 
     # dev related
     jq
+    fd
 
     # nix related tools
     cachix # adding/managing alternative binary caches hosted by Cachix
