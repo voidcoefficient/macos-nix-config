@@ -11,9 +11,7 @@
 
     performance = {
       byteCompileLua.enable = true;
-      combinePlugins = {
-        enable = true;
-      };
+      combinePlugins.enable = true;
     };
 
     globals.mapleader = " ";
@@ -1094,9 +1092,45 @@
       {
         mode = "n";
         key = "<leader>bb";
-        action = "<cmd>Telescope bufferrs<CR>";
+        action = "<cmd>Telescope buffers<CR>";
         options = {
           desc = "show all buffers";
+          silent = true;
+        };
+      }
+      {
+        mode = "n";
+        key = "<leader>gs";
+        action = "<cmd>Telescope git_status<CR>";
+        options = {
+          desc = "git status";
+          silent = true;
+        };
+      }
+      {
+        mode = "n";
+        key = "<leader>gs";
+        action = "<cmd>Telescope git_branches<CR>";
+        options = {
+          desc = "git branches";
+          silent = true;
+        };
+      }
+      {
+        mode = "n";
+        key = "<leader>gS";
+        action = "<cmd>Telescope git_stash<CR>";
+        options = {
+          desc = "git stash";
+          silent = true;
+        };
+      }
+      {
+        mode = "n";
+        key = "<leader>gS";
+        action = "<cmd>Telescope live_grep<CR>";
+        options = {
+          desc = "search ocurrence";
           silent = true;
         };
       }
