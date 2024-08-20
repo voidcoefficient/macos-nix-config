@@ -145,6 +145,8 @@
     coreutils
     curl
     wget
+    spotify
+    obsidian
 
     # dev related
     jq
