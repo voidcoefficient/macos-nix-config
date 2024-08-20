@@ -48,16 +48,21 @@
     nushell = {
       enable = true;
       extraConfig = ''
+        # TODO: Add OS check
+        # (macos) uses native `open` (https://www.nushell.sh/book/configuration.html#macos-keeping-usr-bin-open-as-open)
+        alias nu-open = open
+        alias open = ^open
+
         let carapace_completer = { |spans|
           carapace $spans.0 nushell $spans | from json
         }
 
         $env.config = {
-          show_banner: true,
+          show_banner: false,
           completions: {
             case_sensitive: true
             quick: true
-            partial: ture
+            partial: true
             algorithm: "fuzzy"
             external: {
               enable: true
@@ -65,9 +70,17 @@
               completer: $carapace_completer
             }
           }
-
-          $env.PATH: ( $env.PATH | split row (char esep) | append /usr/bin/env )
         }
+
+        $env.PATH = (
+          $env.PATH 
+          | split row (char esep) 
+          | prepend /usr/local/bin
+          | prepend /etc/profiles/per-user/marla/bin/
+          # FIXME: | prepend ($env.CARGO_HOME | path join .local bin)
+          | prepend ($env.HOME | path join .local bin)
+          | uniq # filter so the paths are unique
+        )
       '';
 
       shellAliases = {
