@@ -15,120 +15,129 @@
       url = "github:nix-community/nixvim";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    rust = {
+      url = "github:oxalica/rust-overlay";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = inputs@{ self, nix-darwin, nixpkgs, home-manager, nixvim }:
-  let
-    configuration = { pkgs, ... }: {
-      nixpkgs.config.allowUnfree = true;
+  outputs = inputs@{ self, nix-darwin, nixpkgs, home-manager, nixvim, rust }:
+    let
+      configuration = { pkgs, ... }: {
+        nixpkgs.config.allowUnfree = true;
 
-      # List packages installed in system profile. To search by name, run:
-      # $ nix-env -qaP | grep wget
-      environment.systemPackages =
-        with pkgs; [
-          miracode
-          nerdfonts
+        # List packages installed in system profile. To search by name, run:
+        # $ nix-env -qaP | grep wget
+        environment.systemPackages =
+          with pkgs; [
+            miracode
+            nerdfonts
 
-          raycast
-          discord
-          eza
-          z-lua
-          bat
+            raycast
+            discord
+            eza
+            z-lua
+            bat
 
-          slack
-          jira-cli-go
-          postman
+            slack
+            jira-cli-go
+            postman
 
-          jetbrains.webstorm
-          gh
-          lazygit
-        ];
+            jetbrains.webstorm
+            gh
+            lazygit
+          ];
 
         users.users.marla.home = "/Users/marla";
 
-      # Auto upgrade nix package and the daemon service.
-      services.nix-daemon.enable = true;
-      nix.package = pkgs.nix;
+        # Auto upgrade nix package and the daemon service.
+        services.nix-daemon.enable = true;
+        nix.package = pkgs.nix;
 
-      # Necessary for using flakes on this system.
-      nix.settings.experimental-features = "nix-command flakes";
+        # Necessary for using flakes on this system.
+        nix.settings.experimental-features = "nix-command flakes";
 
-      nix = {
-        linux-builder.enable = true;
-        extraOptions = ''
-          extra-platforms = x86_64-darwin aarch64-darwin
-        '';
-      };
+        nix = {
+          linux-builder.enable = true;
+          extraOptions = ''
+            extra-platforms = x86_64-darwin aarch64-darwin
+          '';
+        };
 
 
-      # Create /etc/zshrc that loads the nix-darwin environment.
-      programs.zsh.enable = true;  # default shell on catalina
+        # Create /etc/zshrc that loads the nix-darwin environment.
+        programs.zsh.enable = true; # default shell on catalina
 
-      # Set Git commit hash for darwin-version.
-      system.configurationRevision = self.rev or self.dirtyRev or null;
+        # Set Git commit hash for darwin-version.
+        system.configurationRevision = self.rev or self.dirtyRev or null;
 
-      system = {
-        defaults = {
-          finder = {
-            AppleShowAllExtensions = true;
-            AppleShowAllFiles = true;
+        system = {
+          defaults = {
+            finder = {
+              AppleShowAllExtensions = true;
+              AppleShowAllFiles = true;
+            };
+
+            dock = {
+              autohide = true;
+              showhidden = true;
+            };
+
+            NSGlobalDomain = {
+              NSAutomaticCapitalizationEnabled = false;
+              NSAutomaticInlinePredictionEnabled = false;
+              NSAutomaticDashSubstitutionEnabled = false;
+              NSAutomaticPeriodSubstitutionEnabled = false;
+              NSAutomaticQuoteSubstitutionEnabled = false;
+              NSAutomaticSpellingCorrectionEnabled = false;
+              AppleKeyboardUIMode = 3;
+              ApplePressAndHoldEnabled = true;
+              InitialKeyRepeat = 10;
+              KeyRepeat = 1;
+              NSNavPanelExpandedStateForSaveMode = true;
+              NSNavPanelExpandedStateForSaveMode2 = true;
+              _HIHideMenuBar = true;
+            };
           };
 
-          dock = {
-            autohide = true;
-            showhidden = true;
-          };
-
-          NSGlobalDomain = {
-            NSAutomaticCapitalizationEnabled = false;
-            NSAutomaticInlinePredictionEnabled = false;
-            NSAutomaticDashSubstitutionEnabled = false;
-            NSAutomaticPeriodSubstitutionEnabled = false;
-            NSAutomaticQuoteSubstitutionEnabled = false;
-            NSAutomaticSpellingCorrectionEnabled = false;
-            AppleKeyboardUIMode = 3;
-            ApplePressAndHoldEnabled = true;
-            InitialKeyRepeat = 10;
-            KeyRepeat = 1;
-            NSNavPanelExpandedStateForSaveMode = true;
-            NSNavPanelExpandedStateForSaveMode2 = true;
-            _HIHideMenuBar = true;
+          keyboard = {
+            enableKeyMapping = true;
+            remapCapsLockToControl = true;
           };
         };
 
-        keyboard = {
-          enableKeyMapping = true;
-          remapCapsLockToControl = true;
-        };
+
+        # Used for backwards compatibility, please read the changelog before changing.
+        # $ darwin-rebuild changelog
+        system.stateVersion = 4;
+
+        # The platform the configuration will be used on.
+        nixpkgs.hostPlatform = "aarch64-darwin";
+      };
+    in
+    {
+      darwinConfigurations."s11c-mac-studio" = nix-darwin.lib.darwinSystem {
+        system = "aarch64-darwin";
+        modules = [
+          configuration
+          home-manager.darwinModules.home-manager
+          {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.users.marla = import ./home.nix;
+
+            home-manager.sharedModules = [
+              nixvim.homeManagerModules.nixvim
+            ];
+          }
+          ({ pkgs, ... }: {
+            nixpkgs.overlays = [ rust.overlays.default ];
+            environment.systemPackages = [ pkgs.rust-bin.stable.latest.default ];
+          })
+        ];
       };
 
-
-      # Used for backwards compatibility, please read the changelog before changing.
-      # $ darwin-rebuild changelog
-      system.stateVersion = 4;
-
-      # The platform the configuration will be used on.
-      nixpkgs.hostPlatform = "aarch64-darwin";
+      # Expose the package set, including overlays, for convenience.
+      darwinPackages = self.darwinConfigurations."s11c-mac-studio".pkgs;
     };
-      in
-      {
-        darwinConfigurations."s11c-mac-studio" = nix-darwin.lib.darwinSystem {
-          system = "aarch64-darwin";
-          modules = [
-            configuration
-            home-manager.darwinModules.home-manager {
-              home-manager.useGlobalPkgs = true;
-              home-manager.useUserPackages = true;
-              home-manager.users.marla = import ./home.nix;
-
-              home-manager.sharedModules = [
-                nixvim.homeManagerModules.nixvim
-              ];
-            }
-          ];
-        };
-
-    # Expose the package set, including overlays, for convenience.
-    darwinPackages = self.darwinConfigurations."s11c-mac-studio".pkgs;
-  };
 }
