@@ -10,6 +10,7 @@
     stateVersion = "22.05";
     username = "marla";
     homeDirectory = "/Users/marla";
+    sessionPath = [ "$HOME/.cargo/bin" ];
   };
 
   programs = {
@@ -33,6 +34,15 @@
         size = 10000;
         path = "${config.xdg.configHome}/zsh/history";
       };
+
+      initExtra = ''
+        setopt autocd # treats `[folder]` as `cd [folder]`
+
+        hash -d vault=$HOME/Documents/Vault
+        hash -d nix=$HOME/.config/nix
+
+        PATH=$PATH:$HOME/.cargo/bin:$HOME/.local/bin:$HOME/.local/scripts
+      '';
     };
 
     nushell = {
