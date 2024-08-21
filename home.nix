@@ -148,14 +148,18 @@
     spotify
     obsidian
 
+    gum
+
     # dev related
     jq
     fd
+    nodejs
+    jetbrains.idea-ultimate
 
     # nix related tools
     cachix # adding/managing alternative binary caches hosted by Cachix
     comma # run software from without installing it
-    # niv # easy dependency management for nix projects
+    niv # easy dependency management for nix projects
     # nodePackages.node2nix
   ] ++ lib.optionals stdenv.isDarwin [
     m-cli # useful macOS CLI commands
